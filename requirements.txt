@@ -1,0 +1,9 @@
+feedparser
+python-dotenv
+openai
+requests
+beautifulsoup4
+fastapi
+uvicorn
+gspread
+oauth2client
