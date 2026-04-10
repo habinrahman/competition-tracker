@@ -1,30 +1,30 @@
-🚀 Competition Tracker v2
+Competition Tracker v2
 Multi-Domain Intelligence & Email Distribution Platform
 
-Curated news intelligence and job updates, delivered automatically on schedule. This production-grade Python system ingests RSS feeds, filters and deduplicates high-signal stories, and distributes clean HTML digests to targeted recipients without mixing audiences.
+Curated news intelligence and job updates, delivered automatically on schedule. This production-grade Python system ingests RSS feeds, filters and deduplicates high-signal stories, and distributes clean HTML digests to targeted recipients—without mixing audiences.
 
-🔗 GitHub Repository: https://github.com/habinrahman/competition-tracker
+🔗 GitHub Repository:
+https://github.com/habinrahman/competition-tracker
 
 📌 Overview
 
 Staying updated across EdTech, Cloud & DevOps, and GenAI can be overwhelming. Competition Tracker v2 automates the process by delivering curated insights and weekly job digests directly to stakeholders' inboxes.
 
-Why it matters:
-
+💡 Why It Matters
 One codebase serving multiple domains
-Predictable, automated operations
-Secure and environment-driven email routing
+Predictable and automated operations
+Secure, environment-driven email routing
 Cron-ready deployment on DigitalOcean
 ✨ Key Features
 📊 Multi-Domain Intelligence Pipelines
-EdTech (India ecosystem)
-Cloud & DevOps (AWS, Azure, GCP, Kubernetes)
-GenAI (LLMs, frameworks, APIs)
+EdTech: India ecosystem insights
+Cloud & DevOps: AWS, Azure, GCP, Kubernetes, and infrastructure
+GenAI: LLMs, frameworks, APIs, and tools
 💼 Weekly MicroDegree Job Digest
-Fetches the latest jobs from the MicroDegree hiring portal
+Fetches the latest jobs from the MicroDegree Hiring Portal
 Sends curated opportunities to subscribers
 📧 Automated Email Distribution
-Gmail-compatible HTML templates
+Gmail-compatible responsive HTML templates
 Domain-specific recipient routing
 Mass email automation via tech@mdegree.in
 🔐 Secure Unsubscribe System
@@ -32,9 +32,9 @@ Token-based unsubscribe links
 Privacy-focused and compliant
 🔎 RSS-Based Intelligence
 Google News RSS ingestion
-Time-bound queries for recent insights
+Time-bounded queries for recent insights
 🧠 Optional AI Filtering
-LLM-based filtering for EdTech (OpenAI)
+LLM-based filtering using OpenAI
 Fail-open design for reliability
 🔁 Deduplication & Content Merging
 Groups similar stories
@@ -45,46 +45,28 @@ Fully automated scheduling on DigitalOcean
 Structured logs per domain
 Production-ready monitoring
 🏗️ Architecture
-                +----------------------+
-                |  Google News RSS     |
-                +----------+-----------+
-                           |
-                           v
-                    +-------------+
-                    |  Fetcher    |
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    |  Filtering  |
-                    | (Rules/AI)  |
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    | Deduplication|
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    | HTML Builder |
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    | Email Sender |
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    | Subscribers |
-                    +-------------+
-                           |
-                           v
-                    +-------------+
-                    | Cron Jobs    |
-                    | DigitalOcean |
-                    +-------------+
+Google News RSS
+        │
+        ▼
+     Fetcher
+        │
+        ▼
+     Filtering (Rules/AI)
+        │
+        ▼
+     Deduplication
+        │
+        ▼
+     HTML Builder
+        │
+        ▼
+     Email Sender
+        │
+        ▼
+     Subscribers
+        │
+        ▼
+   Cron Jobs (DigitalOcean)
 📁 Project Structure
 competition-tracker/
 │
@@ -107,13 +89,18 @@ git clone https://github.com/habinrahman/competition-tracker.git
 cd competition-tracker
 2️⃣ Create a Virtual Environment
 python -m venv venv
-source venv/bin/activate        # Linux/macOS
-venv\Scripts\activate           # Windows
+
+Activate the environment:
+
+Linux/macOS
+source venv/bin/activate
+Windows
+venv\Scripts\activate
 3️⃣ Install Dependencies
 pip install -r requirements.txt
 🔐 Environment Variables
 
-Create a .env file in the project root.
+Create a .env file in the project root:
 
 EDTECH_RECIPIENTS=edtech@example.com
 CLOUD_RECIPIENTS=cloud@example.com
@@ -151,11 +138,11 @@ Example cron entry:
 
 0 9 * * 3 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_jobs_digest.py >> logs/jobs.log 2>&1
 📧 Example Email Outputs
-Newsletter Digest
+📬 Newsletter Digest
 
 Add screenshots here
 
-Job Digest
+💼 Job Digest
 
 Add screenshots here
 
@@ -181,8 +168,6 @@ Version Control	Git & GitHub
 Version: v2.0
 Status: Production Ready
 
-Create a release:
-
 git tag -a v2.0 -m "Competition Tracker v2 - Production Release"
 git push origin v2.0
 👨‍💻 Author
@@ -194,7 +179,7 @@ Habin Rahman
 
 📜 License
 
-This project is licensed under the MIT License. Add a LICENSE file if you plan to open-source it.
+This project is licensed under the MIT License.
 
 ⭐ Support
 
@@ -203,13 +188,3 @@ If you find this project useful:
 ⭐ Star the repository
 🍴 Fork it
 📢 Share it with others
-📈 Improvements Made to Your Original README
-Enhancement	Benefit
-Modern formatting and icons	Improved readability
-Architecture diagram	Better technical clarity
-Job digest documentation	Reflects new features
-Cron schedule table	Clear operational insight
-GitHub release instructions	Professional presentation
-Tech stack table	Recruiter-friendly
-Screenshot section	Visual appeal
-Security notes	Industry best practices
