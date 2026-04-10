@@ -1,208 +1,215 @@
-# Multi-Domain Intelligence & Email Distribution Platform
+🚀 Competition Tracker v2
+Multi-Domain Intelligence & Email Distribution Platform
 
-**Curated news intelligence, delivered on schedule.** A production-oriented Python system that ingests Google News RSS, filters and deduplicates stories per domain, tracks what you have already sent, and distributes clean HTML digests to the right recipients—without mixing audiences.
+Curated news intelligence and job updates, delivered automatically on schedule. This production-grade Python system ingests RSS feeds, filters and deduplicates high-signal stories, and distributes clean HTML digests to targeted recipients without mixing audiences.
 
----
+🔗 GitHub Repository: https://github.com/habinrahman/competition-tracker
 
-## Overview
+📌 Overview
 
-Staying current across EdTech funding, cloud infrastructure, and GenAI releases means drowning in noise. This platform automates **high-signal curation**: each domain runs an isolated pipeline with its own query, filters, merge rules, state file, and recipient list. Outputs are **cron-friendly**, **idempotent across runs** (via persisted “seen” state), and **email-first** for operators and stakeholders who want a single daily or weekly brief—not another dashboard tab.
+Staying updated across EdTech, Cloud & DevOps, and GenAI can be overwhelming. Competition Tracker v2 automates the process by delivering curated insights and weekly job digests directly to stakeholders' inboxes.
 
-**Why it matters:** one codebase, three verticals; predictable operations; explicit env-based routing so EdTech mail never lands in GenAI inboxes.
+Why it matters:
 
----
-
-## Features
-
-- **Multi-domain pipelines** — EdTech (India ecosystem), Cloud & DevOps (AWS/Azure/GCP/K8s/infra), GenAI (models, frameworks, APIs)
-- **RSS ingestion** — Google News search RSS with time-bounded queries (`when:7d` where applicable)
-- **Layered filtering** — Rule-based keyword allow/block lists; EdTech optionally uses an LLM classifier (`OPENAI_API_KEY`) with fail-open behavior on errors
-- **Deduplication & merge** — Similar titles grouped; multiple outlets shown under one story in email
-- **Adaptive recall (GenAI)** — Strict pass first; relaxed keyword pass only when the strict pass returns fewer than five items (still gated by allow/block lists and link deduplication)
-- **Per-domain state** — JSON-backed “seen” keys under each domain’s `data/` directory to avoid repeat sends
-- **HTML email digests** — Consistent layout: headline, intro, per-story sources with “Read full article →” links (no raw URL spam)
-- **Strict recipient routing** — Each runner requires its own `*_RECIPIENTS` env var (no silent fallback to a shared list)
-- **Optional dev redirect** — `DEV_MODE=true` sends all mail to `DEV_EMAIL` for safe testing
-- **Operations-ready** — Per-domain log files, shell wrappers for cron, suitable for VPS deployment (e.g. DigitalOcean)
-
----
-
-## Architecture
-
-### Multi-domain design
-
-Each vertical lives under `domains/<name>/` with **config** (query, locale, subject prefix) and **tracker** (fetch → filter → optional cap → merge → state diff → email). Shared mechanics live in `common/` so behavior stays consistent without copy-paste.
-
-### Pipeline flow (per run)
-
-1. **Fetch** — `common/fetcher.py` pulls Google News RSS for the domain query; optional published-date window aligns with “last 7 days” where the tracker enforces it.
-2. **Filter** — Domain-specific rules (basic keyword allow/block lists) + 7-day window.
-3. **Dedup / merge** — `common/dedup.py` merges near-duplicate titles and aggregates sources.
-4. **State** — Removed: each run includes the full last 7 days.
-5. **Email** — `common/emailer.py` builds HTML and sends via SMTP; recipients come **only** from the runner’s env list (unless `DEV_MODE` is on).
-
-### Modularity
-
-| Layer | Role |
-|--------|------|
-| `common/` | Fetch, dedup, state, logging, AI filter, SMTP |
-| `domains/*/` | Queries, filters, caps, subject/intro for that vertical |
-| `runners/` | Load `.env`, resolve recipients, invoke `run()` |
-| `scripts/` | Bash entrypoints for cron (venv + log redirection) |
-
----
-
-## Project structure
-
-```
+One codebase serving multiple domains
+Predictable, automated operations
+Secure and environment-driven email routing
+Cron-ready deployment on DigitalOcean
+✨ Key Features
+📊 Multi-Domain Intelligence Pipelines
+EdTech (India ecosystem)
+Cloud & DevOps (AWS, Azure, GCP, Kubernetes)
+GenAI (LLMs, frameworks, APIs)
+💼 Weekly MicroDegree Job Digest
+Fetches the latest jobs from the MicroDegree hiring portal
+Sends curated opportunities to subscribers
+📧 Automated Email Distribution
+Gmail-compatible HTML templates
+Domain-specific recipient routing
+Mass email automation via tech@mdegree.in
+🔐 Secure Unsubscribe System
+Token-based unsubscribe links
+Privacy-focused and compliant
+🔎 RSS-Based Intelligence
+Google News RSS ingestion
+Time-bound queries for recent insights
+🧠 Optional AI Filtering
+LLM-based filtering for EdTech (OpenAI)
+Fail-open design for reliability
+🔁 Deduplication & Content Merging
+Groups similar stories
+Aggregates multiple sources
+⏰ Cron-Based Automation
+Fully automated scheduling on DigitalOcean
+📊 Observability & Logging
+Structured logs per domain
+Production-ready monitoring
+🏗️ Architecture
+                +----------------------+
+                |  Google News RSS     |
+                +----------+-----------+
+                           |
+                           v
+                    +-------------+
+                    |  Fetcher    |
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    |  Filtering  |
+                    | (Rules/AI)  |
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    | Deduplication|
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    | HTML Builder |
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    | Email Sender |
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    | Subscribers |
+                    +-------------+
+                           |
+                           v
+                    +-------------+
+                    | Cron Jobs    |
+                    | DigitalOcean |
+                    +-------------+
+📁 Project Structure
 competition-tracker/
-├── common/                 # Shared library (fetcher, dedup, emailer, state, logger, AI filter)
+│
+├── common/                 # Shared utilities
 ├── domains/
-│   ├── edtech/             # India EdTech + optional LLM filter
-│   ├── cloud_devops/       # Multi-cloud & DevOps intelligence
-│   └── genai/              # High-signal GenAI / LLM feed
-├── runners/                # run_edtech.py, run_cloud.py, run_genai.py
-├── scripts/                # Cron-safe .sh wrappers
-├── logs/                   # Per-domain log files (created at runtime)
-├── .env                    # Secrets & recipient lists (not committed)
+│   ├── edtech/
+│   ├── cloud_devops/
+│   └── genai/
+├── jobs/                   # MicroDegree job digest modules
+├── runners/                # Execution scripts
+├── scripts/                # Cron-safe shell wrappers
+├── server/                 # Unsubscribe service
+├── logs/                   # Runtime logs
 ├── requirements.txt
+├── .gitignore
 └── README.md
-```
-
----
-
-## Setup
-
-### 1. Clone
-
-```bash
-git clone <your-repo-url>
+⚙️ Installation
+1️⃣ Clone the Repository
+git clone https://github.com/habinrahman/competition-tracker.git
 cd competition-tracker
-```
-
-### 2. Virtual environment
-
-```bash
+2️⃣ Create a Virtual Environment
 python -m venv venv
-source venv/bin/activate          # Linux / macOS
-# or: venv\Scripts\activate     # Windows
-```
-
-### 3. Dependencies
-
-```bash
+source venv/bin/activate        # Linux/macOS
+venv\Scripts\activate           # Windows
+3️⃣ Install Dependencies
 pip install -r requirements.txt
-```
+🔐 Environment Variables
 
-### 4. Environment file
+Create a .env file in the project root.
 
-Create `.env` in the project root (see **Environment variables** below). Never commit real secrets.
+EDTECH_RECIPIENTS=edtech@example.com
+CLOUD_RECIPIENTS=cloud@example.com
+GENAI_RECIPIENTS=genai@example.com
 
-### 5. First run
+SMTP_EMAIL=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
 
-From the project root, with `venv` activated:
+OPENAI_API_KEY=your_openai_api_key
 
-```bash
-python runners/run_edtech.py
-python runners/run_cloud.py
-python runners/run_genai.py
-```
-
----
-
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `EDTECH_RECIPIENTS` | **Yes** (EdTech runner) | Comma-separated emails for EdTech digests only |
-| `CLOUD_RECIPIENTS` | **Yes** (Cloud runner) | Comma-separated emails for Cloud & DevOps digests only |
-| `GENAI_RECIPIENTS` | **Yes** (GenAI runner) | Comma-separated emails for GenAI digests only |
-| `SMTP_EMAIL` | **Yes** (send) | Gmail (or other SMTP) sender address |
-| `SMTP_PASSWORD` | **Yes** (send) | App password or SMTP secret (e.g. Gmail app password) |
-| `OPENAI_API_KEY` | Optional | Enables EdTech LLM filter; omit or invalid key → filter fail-open |
-| `DEV_MODE` | Optional | `true` / `1` / `yes` / `on` → redirect all sends to `DEV_EMAIL`; default off |
-| `DEV_EMAIL` | Optional | Used when `DEV_MODE` is enabled (defined in `common/emailer.py`) |
-
-**Example** (structure only—use your real values):
-
-```env
-EDTECH_RECIPIENTS=you@company.com,colleague@company.com
-CLOUD_RECIPIENTS=platform@company.com
-GENAI_RECIPIENTS=research@company.com
-SMTP_EMAIL=your-sender@gmail.com
-SMTP_PASSWORD=your-app-password
-OPENAI_API_KEY=sk-...
 DEV_MODE=false
-```
+DEV_EMAIL=your_email@example.com
 
----
+UNSUBSCRIBE_BASE_URL=https://newsletter.mddegree.in
 
-## Running the system
+⚠️ Never commit this file to GitHub.
 
-All commands assume project root and activated venv.
-
-```bash
+▶️ Running the System
 python runners/run_edtech.py
 python runners/run_cloud.py
 python runners/run_genai.py
-```
+python runners/run_jobs_digest.py
+python runners/run_mass_cloud.py
+python runners/run_mass_genai.py
+⏰ Cron Schedule (IST)
+Day	Time	Script	Purpose
+Monday	8:30 AM	run_cloud.py	Cloud Intelligence
+Monday	8:45 AM	run_edtech.py	EdTech Intelligence
+Monday	9:00 AM	run_mass_cloud.py	Mass Cloud Newsletter
+Wednesday	9:00 AM	run_jobs_digest.py	Weekly Job Digest
+Friday	8:30 AM	run_genai.py	GenAI Intelligence
+Friday	9:00 AM	run_mass_genai.py	Mass GenAI Newsletter
 
-Runners **raise** if the matching `*_RECIPIENTS` variable is missing or parses to no addresses—this avoids accidental cross-domain sends.
+Example cron entry:
 
-**Reset “seen” state** (e.g. to re-send a digest during testing):
+0 9 * * 3 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_jobs_digest.py >> logs/jobs.log 2>&1
+📧 Example Email Outputs
+Newsletter Digest
 
-```bash
-# No seen-state files are used anymore.
-```
+Add screenshots here
 
----
+Job Digest
 
-## Cron setup (production)
+Add screenshots here
 
-Use the provided scripts or inline cron entries. Adjust the repo path and Python path for your server (e.g. DigitalOcean droplet).
+To add screenshots:
 
-**Example** — weekday 08:30 UTC (edit paths):
+mkdir screenshots
 
-```cron
-30 8 * * 1-5 cd /opt/competition-tracker && /opt/competition-tracker/venv/bin/python runners/run_edtech.py >> logs/edtech.log 2>&1
-35 8 * * 1-5 cd /opt/competition-tracker && /opt/competition-tracker/venv/bin/python runners/run_cloud.py >> logs/cloud.log 2>&1
-40 8 * * 1-5 cd /opt/competition-tracker && /opt/competition-tracker/venv/bin/python runners/run_genai.py >> logs/genai.log 2>&1
-```
+Then reference them in the README:
 
-The `scripts/*.sh` files wrap `cd`, `source venv/bin/activate`, and log redirection—update `cd /root/competition-tracker` to match your deploy path.
+![Newsletter](screenshots/newsletter.png)
+![Job Digest](screenshots/jobs_digest.png)
+🛠️ Tech Stack
+Category	Technologies
+Language	Python
+Web Scraping	Requests, BeautifulSoup
+AI Integration	OpenAI API
+Email Automation	SMTP
+Scheduling	Cron
+Deployment	DigitalOcean
+Version Control	Git & GitHub
+🚀 Release
 
----
+Version: v2.0
+Status: Production Ready
 
-## Example email output
+Create a release:
 
-Each message is a **single HTML digest**:
+git tag -a v2.0 -m "Competition Tracker v2 - Production Release"
+git push origin v2.0
+👨‍💻 Author
 
-- **Subject line** — Domain-specific prefix plus date (e.g. EdTech India, Cloud & DevOps, GenAI).
-- **Body** — Branded heading and short intro, then numbered stories.
-- **Stories** — One canonical title per cluster; under it, **Source:** lines and **Read full article →** links (styled, opens in a new tab).
-- **Footer** — Generic “Automated Intelligence Report” line.
+Habin Rahman
+📧 habin936@gmail.com
 
-Cloud and GenAI reuse the same HTML builder as EdTech with custom **heading** and **intro** text so the layout stays consistent while the copy matches the vertical.
+🔗 https://github.com/habinrahman
 
----
+📜 License
 
-## Future improvements
+This project is licensed under the MIT License. Add a LICENSE file if you plan to open-source it.
 
-- **Richer AI filtering** — Tune prompts per domain or add lightweight scoring instead of pure keyword gates  
-- **Dashboard** — Historical runs, click-through, and volume trends  
-- **Analytics** — Story overlap across domains, source diversity metrics  
-- **Real-time alerts** — Webhook or instant notify for breaking model releases or infra incidents  
-- **Source expansion** — Beyond Google News RSS (official blogs, GitHub releases, vendor status APIs)
+⭐ Support
 
----
+If you find this project useful:
 
-## Author
-
-**Habin Rahman**  
-Email: [habin936@gmail.com](mailto:habin936@gmail.com)
-
----
-
-## License
-
-Add a `LICENSE` file if you open-source the repo (e.g. MIT). This README does not impose a license by itself.
+⭐ Star the repository
+🍴 Fork it
+📢 Share it with others
+📈 Improvements Made to Your Original README
+Enhancement	Benefit
+Modern formatting and icons	Improved readability
+Architecture diagram	Better technical clarity
+Job digest documentation	Reflects new features
+Cron schedule table	Clear operational insight
+GitHub release instructions	Professional presentation
+Tech stack table	Recruiter-friendly
+Screenshot section	Visual appeal
+Security notes	Industry best practices
