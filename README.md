@@ -10,7 +10,7 @@ Curated news intelligence and job updates, delivered automatically on schedule. 
 
 ## Overview
 
-Staying current across EdTech, Cloud & DevOps, and GenAI is demanding. **Competition Tracker v2** automates curated insights and a **weekly MicroDegree job digest**, delivered straight to subscribers’ inboxes with token-based unsubscribe support.
+Staying current across EdTech, Cloud & DevOps, and GenAI is demanding. **Competition Tracker v2** automates curated insights and a **weekly MicroDegree newsletter** (jobs + tech intelligence), delivered straight to subscribers’ inboxes with token-based unsubscribe support.
 
 ### Why it matters
 
@@ -26,7 +26,7 @@ Staying current across EdTech, Cloud & DevOps, and GenAI is demanding. **Competi
 | Area | Description |
 |------|-------------|
 | **Multi-domain pipelines** | EdTech (India), Cloud & DevOps (AWS, Azure, GCP, K8s, infra), GenAI (LLMs, tools, APIs) |
-| **Weekly job digest** | Latest roles from the MicroDegree hiring portal; mass send via `tech@mdegree.in` |
+| **Weekly MicroDegree newsletter** | Six jobs + 15 blended GenAI/Cloud stories; one send per week via `tech@mdegree.in` |
 | **Email distribution** | Gmail-friendly HTML; domain-specific routing; mass newsletters via SES |
 | **Unsubscribe** | HMAC token links aligned with subscriber management |
 | **RSS intelligence** | Google News RSS and time-bounded fetches |
@@ -136,9 +136,10 @@ EDTECH_RECIPIENTS=edtech@example.com
 CLOUD_RECIPIENTS=cloud@example.com
 GENAI_RECIPIENTS=genai@example.com
 
-# Gmail SMTP (domain runners / dev)
+# Gmail SMTP (domain runners / dev / weekly preview)
 SMTP_EMAIL=your_email@gmail.com
 SMTP_PASSWORD=your_app_password
+PREVIEW_EMAIL=your_email@gmail.com
 
 OPENAI_API_KEY=your_openai_api_key
 
@@ -154,6 +155,8 @@ UNSUBSCRIBE_SECRET=your_hmac_secret
 
 Mass sends use **Amazon SES** credentials configured in `common/mass_sender.py` (or override via `SES_SMTP_HOST` / `SES_SMTP_PORT` where supported).
 
+**Preview before mass send:** run `python runners/run_weekly_preview.py` locally. It builds the same weekly HTML and sends one copy to `PREVIEW_EMAIL` via Gmail (`SMTP_EMAIL` / `SMTP_PASSWORD`). Subject is prefixed with `[PREVIEW]`. Does not touch subscribers or the production lock file.
+
 ---
 
 ## Running the System
@@ -162,9 +165,8 @@ Mass sends use **Amazon SES** credentials configured in `common/mass_sender.py` 
 python runners/run_edtech.py
 python runners/run_cloud.py
 python runners/run_genai.py
-python runners/run_jobs_digest.py
-python runners/run_mass_cloud.py
-python runners/run_mass_genai.py
+python runners/run_mass_weekly.py
+python runners/run_weekly_preview.py
 ```
 
 ---
@@ -173,17 +175,15 @@ python runners/run_mass_genai.py
 
 | Day | Time | Script | Purpose |
 |-----|------|--------|---------|
-| Monday | 8:30 AM | `run_cloud.py` | Cloud intelligence |
-| Monday | 8:45 AM | `run_edtech.py` | EdTech intelligence |
-| Monday | 9:00 AM | `run_mass_cloud.py` | Mass cloud newsletter |
-| Wednesday | 9:00 AM | `run_jobs_digest.py` | Weekly job digest |
-| Friday | 8:30 AM | `run_genai.py` | GenAI intelligence |
-| Friday | 9:00 AM | `run_mass_genai.py` | Mass GenAI newsletter |
+| Monday | 8:30 AM | `run_cloud.py` | Founder Cloud intelligence (Gmail) |
+| Monday | 8:45 AM | `run_edtech.py` | Founder EdTech intelligence (Gmail) |
+| Monday | 9:00 AM | `run_mass_weekly.py` | **MicroDegree Weekly** — jobs + tech news (SES) |
+| Friday | 8:30 AM | `run_genai.py` | Founder GenAI intelligence (Gmail) |
 
-Example (job digest, Wednesday 09:00 IST—set `TZ=Asia/Kolkata` in crontab):
+Example (weekly newsletter, Monday 09:00 IST—set `TZ=Asia/Kolkata` in crontab):
 
 ```bash
-0 9 * * 3 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_jobs_digest.py >> logs/jobs.log 2>&1
+0 9 * * 1 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_mass_weekly.py >> logs/weekly.log 2>&1
 ```
 
 ---
@@ -200,8 +200,8 @@ Example (job digest, Wednesday 09:00 IST—set `TZ=Asia/Kolkata` in crontab):
 
 ## Example Email Outputs
 
-- **Newsletter digest:** Multi-story cards with optional hero images, source lines, and read links.  
-- **Job digest:** Up to six roles with apply links, portal CTA, and per-recipient unsubscribe footer.  
+- **MicroDegree Weekly:** Six job cards, 15 blended GenAI/Cloud stories, preheader, and one unsubscribe link.  
+- **Founder digests:** Domain-specific intelligence via Gmail (unchanged).  
 
 To add screenshots:
 

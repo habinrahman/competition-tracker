@@ -22,6 +22,50 @@ def _attr_url(url: str) -> str:
     return escape(url, quote=True)
 
 
+def build_unsubscribe_url(email: str, category: str) -> str:
+    """One category-specific unsubscribe URL (token + type)."""
+    base_url = os.getenv("UNSUBSCRIBE_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+    token = _unsubscribe_token(str(email).strip())
+    cat = str(category).strip().lower()
+    return f"{base_url}/unsubscribe?token={token}&type={cat}"
+
+
+def build_unsubscribe_footer(email: str, category: str) -> str:
+    """Single-line footer: one ``Unsubscribe`` link for the given category only."""
+    url = build_unsubscribe_url(email, category)
+    safe_url = _attr_url(url)
+    return f"""
+    <p style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;
+              font-size:11px;color:#999;line-height:1.5;text-align:center;">
+        You are receiving this email because you subscribed to MicroDegree Intelligence.
+    </p>
+    <p style="margin-top:12px;font-size:12px;color:#888;text-align:center;">
+        <a href="{safe_url}" style="color:#1a73e8;text-decoration:none;"
+           target="_blank" rel="noopener noreferrer">Unsubscribe</a>
+    </p>
+    """
+
+
+def build_weekly_unsubscribe_footer(email: str) -> str:
+    """Footer for the unified MicroDegree Weekly newsletter."""
+    url = build_unsubscribe_url(email, "all")
+    safe_url = _attr_url(url)
+    return f"""
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid #e5e7eb;">
+        <p style="margin:0 0 8px;font-size:12px;color:#6b7280;line-height:1.5;text-align:center;">
+            You are receiving MicroDegree Weekly because you subscribed at MicroDegree.
+        </p>
+        <p style="margin:0 0 12px;font-size:12px;color:#6b7280;line-height:1.5;text-align:center;">
+            MicroDegree
+        </p>
+        <p style="margin:0;font-size:12px;color:#6b7280;text-align:center;">
+            <a href="{safe_url}" style="color:#1a73e8;text-decoration:none;"
+               target="_blank" rel="noopener noreferrer">Unsubscribe from MicroDegree Weekly</a>
+        </p>
+    </div>
+    """
+
+
 def _primary_link(item: dict[str, Any]) -> str:
     link = (item.get("link") or "").strip()
     if link:
@@ -72,6 +116,8 @@ def build_feed_html(
     *,
     title: str,
     unsubscribe_recipient_email: str | None = None,
+    extra_footer: str = "",
+    preheader: str | None = None,
 ) -> str:
     content = ""
 
@@ -176,25 +222,9 @@ def build_feed_html(
             </div>
             """
 
-    footer = ""
-    if unsubscribe_recipient_email:
-        base = (
-            os.getenv("UNSUBSCRIBE_BASE_URL")
-            or "https://newsletter.mddegree.in"
-        ).rstrip("/")
-        token = _unsubscribe_token(str(unsubscribe_recipient_email))
-        unsub_url = f"{base}/unsubscribe?token={token}"
-        footer = f"""
-    <p style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#999;line-height:1.5;text-align:center;">
-        You are receiving this because you subscribed to Microdegree Intelligence.
-    </p>
-    <p style="font-size:11px;color:#999;text-align:center;">
-        Microdegree Intelligence &bull; Weekly insights for builders
-    </p>
-    <p style="margin-top:12px;font-size:12px;color:#888;text-align:center;">
-        <a href="{_attr_url(unsub_url)}" style="color:#1a73e8;text-decoration:none;">Unsubscribe</a>
-    </p>
-    """
+    # Single unsubscribe link only when ``extra_footer`` is provided (mass sends).
+    # Founders / other digests: omit ``extra_footer`` — no unsubscribe block in the template.
+    footer = (extra_footer or "").strip()
 
     # STEP 1 — ADD CONTAINER
     html = f"""
@@ -209,7 +239,15 @@ def build_feed_html(
     </div>
     """
 
-    return f"<html><body style=\"margin:0;padding:0;\">{html}</body></html>"
+    preheader_block = ""
+    if preheader is not None and str(preheader).strip():
+        preheader_block = (
+            '<div style="display:none;max-height:0;overflow:hidden;">'
+            f"{escape(str(preheader).strip())}"
+            "</div>"
+        )
+
+    return f'<html><body style="margin:0;padding:0;">{preheader_block}{html}</body></html>'
 
 
 def _dev_mode_enabled() -> bool:
@@ -345,6 +383,11 @@ def build_grouped_html(
         normalized.append({"title": it.get("title") or "", "source": source, "link": link})
 
     return build_feed_html(normalized, title=heading)
+
+
+def send_gmail_html(subject: str, html: str, recipients: list[str]) -> None:
+    """Send HTML via Gmail SMTP (``SMTP_EMAIL`` / ``SMTP_PASSWORD``)."""
+    _send_html(subject, html, recipients)
 
 
 def send_email(news: list[dict[str, Any]], subject: str, recipients: list[str], *, html: str | None = None) -> None:

@@ -69,6 +69,8 @@ def fetch_cloud_news() -> list[dict[str, str]]:
                 "link": link,
                 "source": source,
             }
+            if published_at is not None:
+                row["published_at"] = published_at.isoformat()
 
             _safe_print("Checking:", title)
             staged.append((published_at, row))

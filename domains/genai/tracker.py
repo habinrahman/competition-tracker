@@ -9,10 +9,10 @@ from urllib.parse import urlparse
 
 from common.article_image import enrich_news_items_with_images
 from common.fetcher import fetch_rss_feed
-from common.emailer import send_email
+from common.emailer import build_feed_html, send_email
 from common.logger import get_logger
 
-from domains.genai.config import SUBJECT_PREFIX
+from domains.genai.config import NEWSLETTER_PREHEADER
 
 logger = get_logger("genai")
 
@@ -68,6 +68,8 @@ def fetch_genai_news() -> list[dict[str, str]]:
                 "link": link,
                 "source": source,
             }
+            if published_at is not None:
+                row["published_at"] = published_at.isoformat()
 
             _safe_print("Checking:", title)
             staged.append((published_at, row))
@@ -98,8 +100,14 @@ def run(*, recipients: list[str]) -> None:
         logger.info("No GenAI articles.")
         return
 
-    subject = f"{SUBJECT_PREFIX} ({datetime.now().date()})"
-    send_email(news, subject, recipients)
+    today = datetime.now().strftime("%B %Y")
+    subject = f"Weekly GenAI Intelligence — {today}"
+    html = build_feed_html(
+        news,
+        title=subject,
+        preheader=NEWSLETTER_PREHEADER,
+    )
+    send_email(news, subject, recipients, html=html)
 
     print("GenAI email sent")
     logger.info("GenAI email sent (%d stories).", len(news))

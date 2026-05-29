@@ -7,4 +7,7 @@ HL = "en-US"
 GL = "US"
 CEID = "US:en"
 
-SUBJECT_PREFIX = "🤖 Weekly GenAI Intelligence"
+# Inbox preheader (hidden); used by GenAI digest HTML only.
+NEWSLETTER_PREHEADER = (
+    "Top GenAI updates this week: Agents, Open Models, LangChain & more."
+)

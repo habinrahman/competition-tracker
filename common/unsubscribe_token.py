@@ -16,3 +16,10 @@ if not SECRET:
 def generate_token(email: str) -> str:
     normalized = str(email).strip().lower().encode()
     return hmac.new(SECRET.encode(), normalized, hashlib.sha256).hexdigest()
+
+
+def verify_token(token: str) -> str | None:
+    """Return the subscriber email for a valid token, else None (lazy import avoids cycles)."""
+    from common.subscribers import find_email_by_unsubscribe_token
+
+    return find_email_by_unsubscribe_token(token)

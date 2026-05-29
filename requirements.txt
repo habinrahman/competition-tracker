@@ -1,9 +1,12 @@
-feedparser
-python-dotenv
-openai
-requests
 beautifulsoup4
 fastapi
-uvicorn
+feedparser
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
 gspread
 oauth2client
+openai
+python-dotenv
+requests
+uvicorn

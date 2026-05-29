@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from html import escape
 from typing import Any
-
-from common.unsubscribe_token import generate_token as _unsubscribe_token
 
 PORTAL_URL = "https://portal.microdegree.work/jobs"
 
@@ -18,11 +15,7 @@ def _text(s: str) -> str:
     return escape((s or "").strip(), quote=False)
 
 
-def generate_jobs_email(
-    jobs: list[dict[str, Any]],
-    *,
-    unsubscribe_recipient_email: str | None = None,
-) -> str:
+def build_job_cards_html(jobs: list[dict[str, Any]]) -> str:
     job_cards = ""
 
     for job in jobs:
@@ -53,28 +46,21 @@ def generate_jobs_email(
         </div>
         """
 
+    return job_cards
+
+
+def generate_jobs_email(
+    jobs: list[dict[str, Any]],
+    *,
+    unsubscribe_recipient_email: str | None = None,
+    extra_footer: str = "",
+) -> str:
+    job_cards = build_job_cards_html(jobs)
+
     portal_h = _href(PORTAL_URL)
     sent_on = escape(datetime.now().strftime("%d %B %Y"), quote=False)
 
-    footer = ""
-    if unsubscribe_recipient_email:
-        base = (
-            os.getenv("UNSUBSCRIBE_BASE_URL")
-            or "https://newsletter.mddegree.in"
-        ).rstrip("/")
-        token = _unsubscribe_token(str(unsubscribe_recipient_email))
-        unsub_url = f"{base}/unsubscribe?token={token}"
-        footer = f"""
-    <p style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#999;line-height:1.5;text-align:center;">
-        You are receiving this email because you subscribed to Microdegree Intelligence job updates.
-    </p>
-    <p style="font-size:11px;color:#999;text-align:center;">
-        Microdegree Intelligence &bull; Weekly insights for builders
-    </p>
-    <p style="margin-top:12px;font-size:12px;color:#888;text-align:center;">
-        <a href="{_href(unsub_url)}" style="color:#1a73e8;text-decoration:none;">Unsubscribe</a>
-    </p>
-    """
+    footer = (extra_footer or "").strip()
 
     html = f"""
     <html>
