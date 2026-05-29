@@ -292,3 +292,68 @@ def unsubscribe_user(email: str, category: str) -> bool:
 
     logger.info("unsubscribe_user ok email=%s category=%s", email, cat)
     return True
+
+
+_LEGACY_CATEGORY_COLUMNS = ("Cloud", "GenAI", "Jobs")
+
+
+def migrate_sheet_remove_legacy_categories(*, dry_run: bool = False) -> bool:
+    """
+    Remove Cloud / GenAI / Jobs columns from the subscriber sheet.
+
+    Names and emails are untouched. ``Active`` is kept; if any legacy column
+    was FALSE, ``Active`` is set to FALSE before columns are deleted.
+    """
+    ws = _open_sheet()
+    header = [str(h).strip() for h in ws.row_values(1)]
+    to_remove = [c for c in _LEGACY_CATEGORY_COLUMNS if c in header]
+    if not to_remove:
+        logger.info("Sheet already has no Cloud/GenAI/Jobs columns.")
+        print("[migrate] Nothing to do — legacy columns already removed.")
+        return False
+
+    records = ws.get_all_records()
+    if "Active" in header:
+        active_col = header.index("Active") + 1
+        for row_num, row in enumerate(records, start=2):
+            active = _truthy(row.get("Active"), default=True)
+            for col in _LEGACY_CATEGORY_COLUMNS:
+                if col in row:
+                    active = active and _truthy(row.get(col), default=True)
+            if not dry_run:
+                ws.update_cell(row_num, active_col, _bool_to_cell(active))
+
+    if dry_run:
+        print(f"[migrate] DRY RUN — would remove columns: {', '.join(to_remove)}")
+        print(f"[migrate] Would update Active for {len(records)} rows (merge legacy flags).")
+        return True
+
+    spreadsheet = ws.spreadsheet
+    header = [str(h).strip() for h in ws.row_values(1)]
+    for col_name in ("Jobs", "GenAI", "Cloud"):
+        if col_name not in header:
+            continue
+        col_idx = header.index(col_name)
+        spreadsheet.batch_update(
+            {
+                "requests": [
+                    {
+                        "deleteDimension": {
+                            "range": {
+                                "sheetId": ws.id,
+                                "dimension": "COLUMNS",
+                                "startIndex": col_idx,
+                                "endIndex": col_idx + 1,
+                            }
+                        }
+                    }
+                ]
+            }
+        )
+        header = [str(h).strip() for h in ws.row_values(1)]
+
+    ensure_columns(ws)
+    logger.info("Removed legacy columns: %s", to_remove)
+    print(f"[migrate] Done. Removed: {', '.join(to_remove)}")
+    print("[migrate] Sheet columns are now: Name, Email, Active, Subscribed_On (+ any extras).")
+    return True
