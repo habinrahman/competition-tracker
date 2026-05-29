@@ -297,6 +297,14 @@ def unsubscribe_user(email: str, category: str) -> bool:
 _LEGACY_CATEGORY_COLUMNS = ("Cloud", "GenAI", "Jobs")
 
 
+def _merged_active_value(row: dict[str, Any]) -> str:
+    active = _truthy(row.get("Active"), default=True)
+    for col in _LEGACY_CATEGORY_COLUMNS:
+        if col in row:
+            active = active and _truthy(row.get(col), default=True)
+    return _bool_to_cell(active)
+
+
 def migrate_sheet_remove_legacy_categories(*, dry_run: bool = False) -> bool:
     """
     Remove Cloud / GenAI / Jobs columns from the subscriber sheet.
@@ -304,6 +312,8 @@ def migrate_sheet_remove_legacy_categories(*, dry_run: bool = False) -> bool:
     Names and emails are untouched. ``Active`` is kept; if any legacy column
     was FALSE, ``Active`` is set to FALSE before columns are deleted.
     """
+    from gspread.utils import rowcol_to_a1
+
     ws = _open_sheet()
     header = [str(h).strip() for h in ws.row_values(1)]
     to_remove = [c for c in _LEGACY_CATEGORY_COLUMNS if c in header]
@@ -313,28 +323,25 @@ def migrate_sheet_remove_legacy_categories(*, dry_run: bool = False) -> bool:
         return False
 
     records = ws.get_all_records()
-    if "Active" in header:
-        active_col = header.index("Active") + 1
-        for row_num, row in enumerate(records, start=2):
-            active = _truthy(row.get("Active"), default=True)
-            for col in _LEGACY_CATEGORY_COLUMNS:
-                if col in row:
-                    active = active and _truthy(row.get(col), default=True)
-            if not dry_run:
-                ws.update_cell(row_num, active_col, _bool_to_cell(active))
 
     if dry_run:
         print(f"[migrate] DRY RUN — would remove columns: {', '.join(to_remove)}")
-        print(f"[migrate] Would update Active for {len(records)} rows (merge legacy flags).")
+        print(f"[migrate] Would update Active for {len(records)} rows (one batch write).")
         return True
 
-    spreadsheet = ws.spreadsheet
-    header = [str(h).strip() for h in ws.row_values(1)]
-    for col_name in ("Jobs", "GenAI", "Cloud"):
-        if col_name not in header:
-            continue
-        col_idx = header.index(col_name)
-        spreadsheet.batch_update(
+    if records and "Active" in header:
+        active_col = header.index("Active") + 1
+        values = [[_merged_active_value(row)] for row in records]
+        start = rowcol_to_a1(2, active_col)
+        end = rowcol_to_a1(len(records) + 1, active_col)
+        ws.update(f"{start}:{end}", values, value_input_option="RAW")
+
+    delete_indices = sorted(
+        (header.index(col) for col in _LEGACY_CATEGORY_COLUMNS if col in header),
+        reverse=True,
+    )
+    if delete_indices:
+        ws.spreadsheet.batch_update(
             {
                 "requests": [
                     {
@@ -342,15 +349,15 @@ def migrate_sheet_remove_legacy_categories(*, dry_run: bool = False) -> bool:
                             "range": {
                                 "sheetId": ws.id,
                                 "dimension": "COLUMNS",
-                                "startIndex": col_idx,
-                                "endIndex": col_idx + 1,
+                                "startIndex": idx,
+                                "endIndex": idx + 1,
                             }
                         }
                     }
+                    for idx in delete_indices
                 ]
             }
         )
-        header = [str(h).strip() for h in ws.row_values(1)]
 
     ensure_columns(ws)
     logger.info("Removed legacy columns: %s", to_remove)
