@@ -15,7 +15,7 @@ def _text(s: str) -> str:
     return escape((s or "").strip(), quote=False)
 
 
-def build_job_cards_html(jobs: list[dict[str, Any]]) -> str:
+def build_job_cards_html(jobs: list[dict[str, Any]], *, minimal: bool = False) -> str:
     job_cards = ""
 
     for job in jobs:
@@ -24,6 +24,16 @@ def build_job_cards_html(jobs: list[dict[str, Any]]) -> str:
         location = _text(str(job.get("location", "")))
         experience = _text(str(job.get("experience", "")))
         link = _href(str(job.get("link") or PORTAL_URL))
+
+        if minimal:
+            job_cards += f"""
+            <p style="margin:0 0 14px;line-height:1.5;color:#111827;">
+                <strong>{title}</strong> — {company}<br>
+                <span style="font-size:13px;color:#6b7280;">{location} · Experience: {experience}</span><br>
+                <a href="{link}" style="color:#1a73e8;text-decoration:underline;">View role</a>
+            </p>
+            """
+            continue
 
         job_cards += f"""
         <div style="border:1px solid #e5e7eb;border-radius:12px;

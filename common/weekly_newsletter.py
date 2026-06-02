@@ -23,7 +23,7 @@ WEEKLY_PREHEADER = (
 
 def weekly_subject() -> str:
     month_year = datetime.now().strftime("%B %Y")
-    return f"MicroDegree Weekly — Jobs & Tech Intelligence · {month_year}"
+    return f"MicroDegree Weekly - Jobs and Tech Intelligence - {month_year}"
 
 
 def _parse_published_at(item: dict[str, Any]) -> datetime:
@@ -41,7 +41,7 @@ def fetch_merged_tech_news(*, limit: int = WEEKLY_NEWS_LIMIT) -> list[dict[str, 
     combined: list[dict[str, Any]] = []
     seen_links: set[str] = set()
 
-    for item in fetch_genai_news() + fetch_cloud_news():
+    for item in fetch_genai_news(enrich_images=False) + fetch_cloud_news(enrich_images=False):
         link = (item.get("link") or "").strip()
         if not link or link in seen_links:
             continue
@@ -60,22 +60,16 @@ def _render_news_item_html(item: dict[str, Any], *, index: int) -> str:
 
     if link:
         title_html = (
-            f'<a href="{_attr_url(link)}" target="_blank" rel="noopener noreferrer" '
-            f'style="color:#111827;text-decoration:none;">{title}</a>'
-        )
-        read_html = (
-            f' <span style="color:#6b7280;">·</span> '
-            f'<a href="{_attr_url(link)}" target="_blank" rel="noopener noreferrer" '
-            f'style="color:#1a73e8;text-decoration:none;font-size:13px;">Read</a>'
+            f'<a href="{_attr_url(link)}" '
+            f'style="color:#111827;text-decoration:underline;">{title}</a>'
         )
     else:
         title_html = title
-        read_html = ""
 
     return f"""
     <div style="padding:12px 0;border-bottom:1px solid #e5e7eb;">
         <div style="font-size:{title_size};font-weight:600;line-height:1.45;color:#111827;">
-            {title_html}{read_html}
+            {title_html}
         </div>
         <div style="font-size:12px;color:#6b7280;margin-top:4px;">{source}</div>
     </div>
@@ -88,7 +82,7 @@ def build_weekly_newsletter_html(
     *,
     recipient_email: str,
 ) -> str:
-    job_cards = build_job_cards_html(jobs)
+    job_cards = build_job_cards_html(jobs, minimal=True)
     portal_h = _attr_url(PORTAL_URL)
     sent_on = escape(datetime.now().strftime("%d %B %Y"), quote=False)
     footer = build_weekly_unsubscribe_footer(recipient_email)
@@ -137,8 +131,7 @@ def build_weekly_newsletter_html(
       </p>
       {job_cards}
       <p style="margin:16px 0 28px;font-size:14px;">
-        <a href="{portal_h}" target="_blank" rel="noopener noreferrer"
-           style="color:#1a73e8;text-decoration:none;">View all jobs on MicroDegree →</a>
+        <a href="{portal_h}" style="color:#1a73e8;text-decoration:underline;">View all jobs on MicroDegree</a>
       </p>
 
       <h2 style="margin:0 0 12px;font-size:18px;color:#111827;border-bottom:2px solid #111827;padding-bottom:6px;">

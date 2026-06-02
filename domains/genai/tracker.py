@@ -46,7 +46,7 @@ def _domain_from_url(url: str) -> str:
     return host or "unknown"
 
 
-def fetch_genai_news() -> list[dict[str, str]]:
+def fetch_genai_news(*, enrich_images: bool = True) -> list[dict[str, str]]:
     seven_days_ago = datetime.now() - timedelta(days=7)
     staged: list[tuple[datetime | None, dict[str, str]]] = []
 
@@ -89,7 +89,8 @@ def fetch_genai_news() -> list[dict[str, str]]:
         results.append(row)
 
     top = results[:30]
-    enrich_news_items_with_images(top, max_workers=5)
+    if enrich_images:
+        enrich_news_items_with_images(top, max_workers=5)
     return top
 
 

@@ -16,8 +16,9 @@ SMTP_PORT = int(os.getenv("SES_SMTP_PORT", "587"))
 SMTP_USERNAME = "AKIAXZ5NGE5C727FFNM5"
 SMTP_PASSWORD = "BJZwdMpjrCefDV7B86GCIbtzWHdco1lh0yPefnQ6zyZJ"
 
-FROM_EMAIL = "MicroDegree <tech@mdegree.in>"
+FROM_EMAIL = os.getenv("NEWSLETTER_FROM", "MicroDegree <tech@mdegree.in>").strip()
 REPLY_TO = os.getenv("NEWSLETTER_REPLY_TO", "tech@mdegree.in").strip()
+UNSUBSCRIBE_MAILTO = os.getenv("NEWSLETTER_UNSUBSCRIBE_MAILTO", "tech@mdegree.in").strip()
 
 
 def _envelope_sender(from_header: str) -> str:
@@ -66,7 +67,11 @@ def send_bulk(
                 msg["Subject"] = subject
                 if REPLY_TO:
                     msg["Reply-To"] = REPLY_TO
-                msg["List-Unsubscribe"] = f"<{unsub_url}>"
+                msg["Precedence"] = "bulk"
+                list_unsub = f"<{unsub_url}>"
+                if UNSUBSCRIBE_MAILTO:
+                    list_unsub = f"<mailto:{UNSUBSCRIBE_MAILTO}?subject=unsubscribe>, {list_unsub}"
+                msg["List-Unsubscribe"] = list_unsub
                 msg["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
 
                 if build_plain is not None:

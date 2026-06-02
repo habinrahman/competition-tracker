@@ -50,17 +50,20 @@ def build_weekly_unsubscribe_footer(email: str) -> str:
     """Footer for the unified MicroDegree Weekly newsletter."""
     url = build_unsubscribe_url(email, "all")
     safe_url = _attr_url(url)
+    address = escape(
+        (os.getenv("NEWSLETTER_PHYSICAL_ADDRESS") or "MicroDegree, India").strip(),
+        quote=False,
+    )
     return f"""
     <div style="margin-top:28px;padding-top:20px;border-top:1px solid #e5e7eb;">
         <p style="margin:0 0 8px;font-size:12px;color:#6b7280;line-height:1.5;text-align:center;">
-            You are receiving MicroDegree Weekly because you subscribed at MicroDegree.
+            You subscribed to MicroDegree Weekly updates.
         </p>
-        <p style="margin:0 0 12px;font-size:12px;color:#6b7280;line-height:1.5;text-align:center;">
-            MicroDegree
+        <p style="margin:0 0 8px;font-size:12px;color:#6b7280;line-height:1.5;text-align:center;">
+            {address}
         </p>
         <p style="margin:0;font-size:12px;color:#6b7280;text-align:center;">
-            <a href="{safe_url}" style="color:#1a73e8;text-decoration:none;"
-               target="_blank" rel="noopener noreferrer">Unsubscribe from MicroDegree Weekly</a>
+            <a href="{safe_url}" style="color:#1a73e8;text-decoration:underline;">Unsubscribe</a>
         </p>
     </div>
     """
