@@ -173,18 +173,33 @@ python runners/run_weekly_preview.py
 
 ## Cron Schedule (IST)
 
-| Day | Time | Script | Purpose |
-|-----|------|--------|---------|
+All times below are **India Standard Time (IST)**.
+
+| Day | Time (IST) | Script | Purpose |
+|-----|------------|--------|---------|
 | Monday | 8:30 AM | `run_cloud.py` | Founder Cloud intelligence (Gmail) |
 | Monday | 8:45 AM | `run_edtech.py` | Founder EdTech intelligence (Gmail) |
-| Monday | 9:00 AM | `run_mass_weekly.py` | **MicroDegree Weekly** — jobs + tech news (SES) |
+| Monday | 9:00 PM | `run_mass_weekly.py` | **MicroDegree Weekly** — jobs + tech news (SES) |
 | Friday | 8:30 AM | `run_genai.py` | Founder GenAI intelligence (Gmail) |
 
-Example (weekly newsletter, Monday 09:00 IST—set `TZ=Asia/Kolkata` in crontab):
+### Fix cron running at the wrong time (e.g. 2 PM instead of 8:30 AM)
+
+If jobs fire ~5½ hours late, the server is using **UTC**. On the droplet:
 
 ```bash
-0 9 * * 1 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_mass_weekly.py >> logs/weekly.log 2>&1
+timedatectl set-timezone Asia/Kolkata
+timedatectl
 ```
+
+Then install the IST crontab (template: `scripts/crontab.ist.example`):
+
+```bash
+cd /root/competition-tracker-v2
+crontab scripts/crontab.ist.example
+crontab -l
+```
+
+The first line must be `TZ=Asia/Kolkata`. Save a backup: `crontab -l > cron_backup.txt`.
 
 ---
 
@@ -193,7 +208,7 @@ Example (weekly newsletter, Monday 09:00 IST—set `TZ=Asia/Kolkata` in crontab)
 1. **Droplet:** Ubuntu LTS, Python 3.x, `git`, and a virtualenv under the app path (e.g. `/root/competition-tracker-v2`).  
 2. **Secrets:** Copy `.env`, `credentials.json` (if used), and any TLS/SMTP configuration securely; restrict file permissions.  
 3. **Cron:** Install entries under the app user; use absolute paths to `venv/bin/python` and append logs under `logs/`.  
-4. **Time zone:** `crontab -e` → `TZ=Asia/Kolkata` for IST schedules.  
+4. **Time zone:** `timedatectl set-timezone Asia/Kolkata` and `TZ=Asia/Kolkata` at the top of crontab (see `scripts/crontab.ist.example`).  
 5. **Unsubscribe:** Run the FastAPI unsubscribe service (`server/`) behind a process manager if you host the public unsubscribe URL separately.  
 
 ---

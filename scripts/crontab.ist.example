@@ -1,0 +1,30 @@
+# MicroDegree competition-tracker-v2 — all times IST (Asia/Kolkata)
+# Install: crontab -e  → paste this file (or: crontab scripts/crontab.ist.example)
+#
+# On the droplet, also run once:
+#   timedatectl set-timezone Asia/Kolkata
+#   timedatectl   # verify "Time zone: Asia/Kolkata (IST, +0530)"
+
+TZ=Asia/Kolkata
+
+@reboot mkdir -p /root/competition-tracker-v2/logs
+
+# =========================
+# MONDAY (IST)
+# =========================
+
+# Founders - Cloud (8:30 AM IST)
+30 8 * * 1 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_cloud.py >> logs/cloud_founders.log 2>&1
+
+# Founders - EdTech (8:45 AM IST)
+45 8 * * 1 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_edtech.py >> logs/edtech.log 2>&1
+
+# Subscribers - MicroDegree Weekly (9:00 PM IST)
+0 21 * * 1 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_mass_weekly.py >> logs/weekly.log 2>&1
+
+# =========================
+# FRIDAY (IST)
+# =========================
+
+# Founders - GenAI (8:30 AM IST)
+30 8 * * 5 cd /root/competition-tracker-v2 && /root/competition-tracker-v2/venv/bin/python runners/run_genai.py >> logs/genai_founders.log 2>&1

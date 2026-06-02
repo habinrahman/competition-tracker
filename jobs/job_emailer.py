@@ -35,8 +35,8 @@ def build_job_cards_html(jobs: list[dict[str, Any]]) -> str:
                 </a>
             </h3>
             <p style="margin:6px 0;"><strong>{company}</strong></p>
-            <p style="margin:4px 0;">&#128205; {location}</p>
-            <p style="margin:4px 0;">&#128188; Experience: {experience}</p>
+            <p style="margin:4px 0;color:#374151;">Location: {location}</p>
+            <p style="margin:4px 0;color:#374151;">Experience: {experience}</p>
             <a href="{link}" target="_blank" rel="noopener noreferrer"
                style="display:inline-block;margin-top:10px;
                padding:10px 16px;background:#2563eb;color:#fff;

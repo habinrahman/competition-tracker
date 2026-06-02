@@ -16,6 +16,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from common.mass_sender import send_bulk
 from common.weekly_newsletter import (
     build_weekly_newsletter_html,
+    build_weekly_plain_text,
     fetch_merged_tech_news,
     weekly_subject,
 )
@@ -74,6 +75,11 @@ def main() -> None:
         emails,
         subject,
         build_html=lambda addr: build_weekly_newsletter_html(
+            jobs,
+            news,
+            recipient_email=addr,
+        ),
+        build_plain=lambda addr: build_weekly_plain_text(
             jobs,
             news,
             recipient_email=addr,

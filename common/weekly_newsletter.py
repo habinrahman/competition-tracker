@@ -8,6 +8,7 @@ from common.emailer import (
     _attr_url,
     _primary_link,
     _primary_source_label,
+    build_unsubscribe_url,
     build_weekly_unsubscribe_footer,
 )
 from domains.cloud_devops.tracker import fetch_cloud_news
@@ -103,7 +104,7 @@ def build_weekly_newsletter_html(
             "</p>"
         )
 
-    preheader = escape(WEEKLY_PREHEADER.strip())
+    preview = escape(WEEKLY_PREHEADER.strip())
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -113,7 +114,6 @@ def build_weekly_newsletter_html(
   <title>{escape(weekly_subject())}</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
-  <div style="display:none;max-height:0;overflow:hidden;">{preheader}</div>
   <div style="max-width:600px;margin:0 auto;padding:24px 16px;">
     <div style="background:#ffffff;border-radius:8px;padding:24px 20px;border:1px solid #e5e7eb;">
       <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#6b7280;">
@@ -122,6 +122,9 @@ def build_weekly_newsletter_html(
       <h1 style="margin:0 0 8px;font-size:22px;line-height:1.3;color:#111827;font-weight:700;">
         Your weekly update
       </h1>
+      <p style="margin:0 0 16px;font-size:13px;line-height:1.5;color:#6b7280;">
+        {preview}
+      </p>
       <p style="margin:0 0 24px;font-size:14px;line-height:1.55;color:#374151;">
         Jobs worth applying to, plus the most important GenAI and Cloud stories from the past week.
       </p>
@@ -155,3 +158,47 @@ def build_weekly_newsletter_html(
   </div>
 </body>
 </html>"""
+
+
+def build_weekly_plain_text(
+    jobs: list[dict[str, Any]],
+    news: list[dict[str, Any]],
+    *,
+    recipient_email: str,
+) -> str:
+    lines = [
+        "MicroDegree Weekly",
+        "",
+        WEEKLY_PREHEADER,
+        "",
+        "Job opportunities",
+        "",
+    ]
+    for job in jobs:
+        title = (job.get("title") or "").strip()
+        company = (job.get("company") or "").strip()
+        link = (job.get("link") or PORTAL_URL).strip()
+        lines.append(f"- {title} ({company})")
+        lines.append(f"  {link}")
+        lines.append("")
+
+    lines.extend(["Tech intelligence", ""])
+    for item in news:
+        title = (item.get("title") or "").strip()
+        link = _primary_link(item)
+        if link:
+            lines.append(f"- {title}")
+            lines.append(f"  {link}")
+        else:
+            lines.append(f"- {title}")
+
+    lines.extend(
+        [
+            "",
+            f"View all jobs: {PORTAL_URL}",
+            "",
+            "Unsubscribe from MicroDegree Weekly:",
+            build_unsubscribe_url(recipient_email, "all"),
+        ]
+    )
+    return "\n".join(lines)
