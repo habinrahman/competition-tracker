@@ -6,6 +6,7 @@ import time
 from collections.abc import Callable
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import make_msgid
 
 from common.emailer import build_unsubscribe_url
 
@@ -73,13 +74,16 @@ def send_bulk(
                     list_unsub = f"<mailto:{UNSUBSCRIBE_MAILTO}?subject=unsubscribe>, {list_unsub}"
                 msg["List-Unsubscribe"] = list_unsub
                 msg["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+                msg["List-ID"] = "<microdegree-weekly.mdegree.in>"
+                msg["Message-ID"] = make_msgid(domain="mdegree.in")
 
                 if build_plain is not None:
                     msg.attach(MIMEText(build_plain(to_addr), "plain", "utf-8"))
                 else:
                     msg.attach(
                         MIMEText(
-                            f"MicroDegree Weekly\n\nUnsubscribe: {unsub_url}",
+                            "MicroDegree Weekly\n\n"
+                            "Use the Unsubscribe link in this email (or one-click in Gmail).",
                             "plain",
                             "utf-8",
                         )

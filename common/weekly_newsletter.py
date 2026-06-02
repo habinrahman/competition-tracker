@@ -190,8 +190,8 @@ def build_weekly_plain_text(
             "",
             f"View all jobs: {PORTAL_URL}",
             "",
-            "Unsubscribe from MicroDegree Weekly:",
-            build_unsubscribe_url(recipient_email, "all"),
+            "Unsubscribe: use the Unsubscribe link in this email "
+            "(one-click in Gmail/Outlook), or email tech@mdegree.in with subject Unsubscribe.",
         ]
     )
     return "\n".join(lines)
