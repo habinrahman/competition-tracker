@@ -1,0 +1,138 @@
+{
+  "jobs": [
+    {
+      "title": "Technical Team Leader - DevOps & DevSecOps",
+      "company": "Betsol",
+      "location": "Bangalore",
+      "experience": "8",
+      "link": "https://www.glassdoor.co.in/job-listing/technical-team-leader-devops-devsecops-betsol-JV_IC2940587_KO0,38_KE39,45.htm?jl=1010211045725"
+    },
+    {
+      "title": "Senior DevOps Engineer",
+      "company": "Jones Lang LaSalle",
+      "location": "Bangalore",
+      "experience": "5",
+      "link": "https://www.glassdoor.co.in/job-listing/senior-devops-engineer-jones-lang-lasalle-JV_IC2940587_KO0,22_KE23,41.htm?jl=1010211298608"
+    },
+    {
+      "title": "Principal Engineer-DevOps",
+      "company": "Verizon",
+      "location": "Bangalore",
+      "experience": "6",
+      "link": "https://www.glassdoor.co.in/job-listing/principal-engineer-devops-verizon-JV_IC2940587_KO0,25_KE26,33.htm?jl=1010210841085"
+    },
+    {
+      "title": "Senior DevOps Engineer",
+      "company": "VuNet Systems",
+      "location": "Bangalore",
+      "experience": "5",
+      "link": "https://www.glassdoor.co.in/job-listing/senior-devops-engineer-vunet-systems-JV_IC2940587_KO0,22_KE23,36.htm?jl=1010210861500"
+    },
+    {
+      "title": "DevOps Engineer",
+      "company": "Eurofins",
+      "location": "Bangalore",
+      "experience": "5",
+      "link": "https://www.glassdoor.co.in/job-listing/devops-engineer-eurofins-scientific-JV_IC2940587_KO0,15_KE16,35.htm?jl=1010210915067"
+    },
+    {
+      "title": "Junior DevOps Engineer",
+      "company": "Taski Technologies Private Limited",
+      "location": "Bangalore",
+      "experience": "1",
+      "link": "https://www.glassdoor.co.in/job-listing/junior-devops-engineer-taski-technologies-private-limited-JV_KO0,22_KE23,57.htm?jl=1010210656308"
+    }
+  ],
+  "news": [
+    {
+      "title": "DevOps Is Drowning in Updates\u2014and Engineering Is Paying the Price",
+      "link": "https://devops.com/devops-is-drowning-in-updates-and-engineering-is-paying-the-price/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-28T22:56:07"
+    },
+    {
+      "title": "The Anatomy of a $900,000 Validation Bill",
+      "link": "https://devops.com/the-anatomy-of-a-900000-validation-bill/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-28T20:07:14"
+    },
+    {
+      "title": "Adoption and Fragmentation of AI in CI/CD\u2014and Operational Readiness",
+      "link": "https://devops.com/adoption-and-fragmentation-of-ai-in-ci-cd-and-operational-readiness/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-28T18:18:30"
+    },
+    {
+      "title": "Scientific computing in the age of agentic AI",
+      "link": "https://openai.com/index/scientific-computing-agentic-ai",
+      "source": "OpenAI News",
+      "published_at": "2026-07-28T17:00:00"
+    },
+    {
+      "title": "The OlmoEarth Platform: Geospatial inference at planetary scale",
+      "link": "https://huggingface.co/blog/allenai/olmoearth-infrastructure",
+      "source": "Hugging Face - Blog",
+      "published_at": "2026-07-28T16:27:42"
+    },
+    {
+      "title": "Disrupting supply chain attacks on npm and GitHub Actions",
+      "link": "https://github.blog/security/supply-chain-security/disrupting-supply-chain-attacks-on-npm-and-github-actions/",
+      "source": "The GitHub Blog",
+      "published_at": "2026-07-28T16:00:00"
+    },
+    {
+      "title": "Find any commit in seconds: Commit Search comes to Azure DevOps",
+      "link": "https://devblogs.microsoft.com/devops/find-any-commit-in-seconds-commit-search-comes-to-azure-devops/",
+      "source": "Azure DevOps Blog",
+      "published_at": "2026-07-28T15:24:55"
+    },
+    {
+      "title": "LFM2.5-Encoders for Fast Long-Context Inference on CPU",
+      "link": "https://huggingface.co/blog/LiquidAI/lfm2-5-encoders",
+      "source": "Hugging Face - Blog",
+      "published_at": "2026-07-28T15:01:45"
+    },
+    {
+      "title": "Coding Agent Horror Stories: The 29 Million Secret Problem",
+      "link": "https://www.docker.com/blog/coding-agent-horror-stories-the-29-million-secret-problem/",
+      "source": "Docker",
+      "published_at": "2026-07-28T13:00:00"
+    },
+    {
+      "title": "The Innovation Puzzle 2.0: Connecting Vision and Value",
+      "link": "https://devops.com/the-innovation-puzzle-2-0-connecting-vision-and-value/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-27T19:13:38"
+    },
+    {
+      "title": "The harness is all you need (mostly)",
+      "link": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/",
+      "source": "The GitHub Blog",
+      "published_at": "2026-07-27T18:00:00"
+    },
+    {
+      "title": "GitHub Copilot app for Beginners: Getting started",
+      "link": "https://github.blog/ai-and-ml/github-copilot/github-copilot-app-for-beginners-getting-started/",
+      "source": "The GitHub Blog",
+      "published_at": "2026-07-27T16:00:00"
+    },
+    {
+      "title": "AWS Weekly Roundup: Local Zone in Athens, Claude Opus 5 on AWS, Lambda durable execution for .NET, and more (July 27, 2026)",
+      "link": "https://aws.amazon.com/blogs/aws/aws-weekly-roundup-july-27-2026/",
+      "source": "AWS News Blog",
+      "published_at": "2026-07-27T14:54:41"
+    },
+    {
+      "title": "Investments in DevOps Tools and Platforms Start to Accelerate in AI Era",
+      "link": "https://devops.com/investments-in-devops-tools-and-platforms-start-to-accelerate-in-ai-era/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-27T14:39:34"
+    },
+    {
+      "title": "Ten Great DevOps Job Opportunities",
+      "link": "https://devops.com/ten-great-devops-job-opportunities-16/",
+      "source": "DevOps.com",
+      "published_at": "2026-07-27T13:59:14"
+    }
+  ]
+}

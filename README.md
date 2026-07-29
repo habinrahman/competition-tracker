@@ -2,6 +2,10 @@
 
 Automated competitive-intelligence pipeline that monitors DevOps/Cloud training competitors and the broader Indian EdTech ecosystem, and emails a founder-facing intelligence report on a schedule.
 
+![MicroDegree Weekly demo](docs/demo/demo.gif)
+
+<p align="center"><em>Weekly newsletter preview — live jobs from MicroDegree + curated GenAI &amp; Cloud RSS. Re-record: <code>python runners/build_demo_assets.py && cd scripts && npm run record:demo</code></em></p>
+
 > **Documentation note:** this repository had no README prior to this document. Everything below was written from a direct read of the source (all `*.py` scripts, `data/`, `reports/`, `run_cron.sh`, `.env` keys, and `cron.log`) — nothing here is assumed or invented. Where the code is incomplete, broken, or unused, that is called out explicitly rather than glossed over.
 
 ---
